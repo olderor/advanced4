@@ -7,7 +7,7 @@
 
 // Used for solving the problem.
 struct wall_builder {
- public:
+public:
     // Initialize with field and block prices.
     wall_builder(
         std::vector< std::vector<char> > &data,
@@ -17,7 +17,7 @@ struct wall_builder {
     // Get answer to the problem - minimum price to fix wall.
     int get_min_price();
 
- private:
+private:
     // Used for storing data about each cell in the field.
     struct point {
         // Determine whether cell is free (has to be fixed).
@@ -29,7 +29,7 @@ struct wall_builder {
     // Height and width of the field.
     int height, width;
     // Block prices.
-    int priceA, priceB;
+    int price_a, price_b;
     // Number of elements that have to be fixed.
     int free_count = 0;
 
@@ -45,9 +45,9 @@ struct wall_builder {
     std::vector< std::vector<point> > field;
 
     // Number of vertex in the first part of bigraph.
-    int firstSize = 0;
+    int first_size = 0;
     // Number of vertex in the second part of bigraph.
-    int secondSize = 0;
+    int second_size = 0;
 
     // Kuhn algorithm to improve matching for the particular vertex.
     bool kuhn(const int vertex);
@@ -66,8 +66,8 @@ void read_data(
     std::istream &_Istr,
     int &height,
     int &width,
-    int &priceDouble,
-    int &priceSimple,
+    int &price_double,
+    int &price_simple,
     std::vector< std::vector<char> > &data);
 
 // Printing data to the output.
@@ -80,10 +80,10 @@ int main();
 
 wall_builder::wall_builder(
     std::vector< std::vector<char> > &data,
-    const int priceDouble,
-    const int priceSimple) {
-    priceA = priceDouble;
-    priceB = priceSimple;
+    const int price_double,
+    const int price_simple) {
+    price_a = price_double;
+    price_b = price_simple;
 
     height = data.size();
     if (height == 0) {
@@ -106,17 +106,17 @@ wall_builder::wall_builder(
             ++free_count;
 
             if ((heighti + widthj) % 2 == 0) {
-                field[heighti][widthj].index = firstSize++;
+                field[heighti][widthj].index = first_size++;
             } else {
-                field[heighti][widthj].index = secondSize++;
+                field[heighti][widthj].index = second_size++;
             }
         }
     }
 }
 
 int wall_builder::get_min_price() {
-    if (2 * priceB <= priceA) {
-        return priceB * free_count;
+    if (2 * price_b <= price_a) {
+        return price_b * free_count;
     }
 
     build_graph();
@@ -124,7 +124,7 @@ int wall_builder::get_min_price() {
     improve_graph();
     const int connections = get_connections_count();
 
-    return connections * priceA + (free_count - connections * 2) * priceB;
+    return connections * price_a + (free_count - connections * 2) * price_b;
 }
 
 bool wall_builder::kuhn(const int vertex) {
@@ -175,9 +175,9 @@ void wall_builder::build_graph() {
 }
 
 void wall_builder::fill_graph() {
-    independent_edge_set = std::vector<int>(secondSize, -1);
-    used_temp = std::vector<bool>(firstSize);
-    for (int i = 0; i < firstSize; ++i) {
+    independent_edge_set = std::vector<int>(second_size, -1);
+    used_temp = std::vector<bool>(first_size);
+    for (int i = 0; i < first_size; ++i) {
         for (int j = 0; j < bigraph[i].size(); ++j) {
             if (independent_edge_set[bigraph[i][j]] == -1) {
                 independent_edge_set[bigraph[i][j]] = i;
@@ -189,18 +189,18 @@ void wall_builder::fill_graph() {
 }
 
 void wall_builder::improve_graph() {
-    for (int i = 0; i < firstSize; ++i) {
+    for (int i = 0; i < first_size; ++i) {
         if (used_temp[i]) {
             continue;
         }
-        used = std::vector<bool>(firstSize, false);
+        used = std::vector<bool>(first_size, false);
         kuhn(i);
     }
 }
 
 int wall_builder::get_connections_count() {
     int connections_count = 0;
-    for (int i = 0; i < secondSize; ++i) {
+    for (int i = 0; i < second_size; ++i) {
         if (independent_edge_set[i] != -1) {
             ++connections_count;
         }
@@ -212,10 +212,10 @@ void read_data(
     std::istream &_Istr,
     int &height,
     int &width,
-    int &priceDouble,
-    int &priceSimple,
+    int &price_double,
+    int &price_simple,
     std::vector< std::vector<char> > &data) {
-    _Istr >> height >> width >> priceDouble >> priceSimple;
+    _Istr >> height >> width >> price_double >> price_simple;
 
     data.resize(height, std::vector<char>(width));
 
@@ -232,12 +232,12 @@ void print_data(std::ostream &_Ostr, const int data) {
 }
 
 int main() {
-    int height, width, priceDouble, priceSimple;
+    int height, width, price_double, price_simple;
     std::vector< std::vector<char> > data;
 
-    read_data(std::cin, height, width, priceDouble, priceSimple, data);
+    read_data(std::cin, height, width, price_double, price_simple, data);
 
-    wall_builder wb = wall_builder(data, priceDouble, priceSimple);
+    wall_builder wb = wall_builder(data, price_double, price_simple);
 
     print_data(std::cout, wb.get_min_price());
 
