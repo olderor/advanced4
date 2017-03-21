@@ -20,9 +20,9 @@ struct wall_builder {
  private:
     // Used for storing data about each cell in the field.
     struct point {
-        // Determine wether cell is free (has to be fixed).
+        // Determine whether cell is free (has to be fixed).
         bool free;
-        // Index of the cell in the Bigraph.
+        // Index of the cell in the bigraph.
         int index;
     };
 
@@ -63,6 +63,7 @@ struct wall_builder {
 
 // Reading data from the input.
 void read_data(
+    std::istream &_Istr,
     int &height,
     int &width,
     int &priceDouble,
@@ -70,7 +71,7 @@ void read_data(
     std::vector< std::vector<char> > &data);
 
 // Printing data to the output.
-void print_data(const int data);
+void print_data(std::ostream &_Ostr, const int data);
 
 // Entry point.
 int main();
@@ -208,59 +209,38 @@ int wall_builder::get_connections_count() {
 }
 
 void read_data(
+    std::istream &_Istr,
     int &height,
     int &width,
     int &priceDouble,
     int &priceSimple,
     std::vector< std::vector<char> > &data) {
-    scanf("%d %d %d %d", &height, &width, &priceDouble, &priceSimple);
+    _Istr >> height >> width >> priceDouble >> priceSimple;
 
     data.resize(height, std::vector<char>(width));
 
     char new_line;
     for (int i = 0; i < height; ++i) {
-        scanf("%c", &new_line);
         for (int j = 0; j < width; ++j) {
-            scanf("%c", &data[i][j]);
+            _Istr >> data[i][j];
         }
     }
 }
 
-void print_data(const int data) {
-    printf("%d", data);
+void print_data(std::ostream &_Ostr, const int data) {
+    _Ostr << data << "\n";
 }
 
 int main() {
     int height, width, priceDouble, priceSimple;
     std::vector< std::vector<char> > data;
 
-    read_data(height, width, priceDouble, priceSimple, data);
+    read_data(std::cin, height, width, priceDouble, priceSimple, data);
 
     wall_builder wb = wall_builder(data, priceDouble, priceSimple);
 
-    print_data(wb.get_min_price());
+    print_data(std::cout, wb.get_min_price());
 
 
     return 0;
 }
-
-
-/*
-
-3 10 3 2
-.**.**.***
-.*..*..*.*
-..**.*.***
-
-.<>.<>.<>|
-.?..?..|.|
-..<>.?.|<>
-
-0123456789
-.<>.|?.<>|
-.?..|..|.|
-..<>.?.|<>
-2 * 7 + 3 * 3 = 14 + 9 = 23
-
-
-*/
