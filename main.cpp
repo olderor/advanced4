@@ -31,7 +31,9 @@ private:
     // Number of elements that have to be fixed.
     int free_count = 0;
 
-    // Storing bigraph. Each vertex stores their own number of connected vertex.
+    // Stores the input data - given state of field. 
+    std::vector< std::vector<char> > data;
+    // Stores bigraph. Each vertex stores their own number of connected vertex.
     std::vector < std::vector<int> > bigraph;
     // Matching in the graph theory.
     std::vector<int> independent_edge_set;
@@ -47,14 +49,16 @@ private:
     // Number of vertex in the second part of bigraph.
     int second_size = 0;
 
+    // Parse the data (given state of field). Split field into two parts of the bigraph.
+    const void process_field();
     // Kuhn algorithm to improve matching for the particular vertex.
     const bool kuhn(const int vertex);
     // Builds bigraph from the current field state.
     const void build_graph();
     // Set matching randomly.
-    const void fill_graph();
+    const void set_random_matching();
     // Try to improve matching from the current state.
-    const void try_to_increase_matching();
+    const void find_maximum_matching();
     // Get matching size.
     const int get_connections_count() const;
 };
@@ -100,6 +104,7 @@ wall_builder::wall_builder(
 
     price_a = price_double;
     price_b = price_simple;
+    this->data = data;
 
     height = data.size();
     if (height == 0) {
@@ -110,7 +115,9 @@ wall_builder::wall_builder(
 
     field = std::vector< std::vector<point> >(height,
         std::vector<point>(width));
+}
 
+const void wall_builder::process_field() {
     for (int heighti = 0; heighti < height; ++heighti) {
         for (int widthj = 0; widthj < width; ++widthj) {
             field[heighti][widthj].free = data[heighti][widthj] == '*';
@@ -131,13 +138,15 @@ wall_builder::wall_builder(
 }
 
 const int wall_builder::get_min_price() {
+    process_field();
+
     if (2 * price_b <= price_a) {
         return price_b * free_count;
     }
 
     build_graph();
-    fill_graph();
-    try_to_increase_matching();
+    set_random_matching();
+    find_maximum_matching();
     const int connections = get_connections_count();
 
     return connections * price_a + (free_count - connections * 2) * price_b;
@@ -190,7 +199,7 @@ const void wall_builder::build_graph() {
     }
 }
 
-const void wall_builder::fill_graph() {
+const void wall_builder::set_random_matching() {
     independent_edge_set = std::vector<int>(second_size, -1);
     used_temp = std::vector<bool>(first_size);
     for (int i = 0; i < first_size; ++i) {
@@ -204,7 +213,7 @@ const void wall_builder::fill_graph() {
     }
 }
 
-const void wall_builder::try_to_increase_matching() {
+const void wall_builder::find_maximum_matching() {
     for (int i = 0; i < first_size; ++i) {
         if (used_temp[i]) {
             continue;
