@@ -4,7 +4,7 @@
 #include <vector>
 
 // Used for solving the problem.
-const struct wall_builder {
+struct wall_builder {
 public:
     // Initialize with field and block prices.
     wall_builder(
