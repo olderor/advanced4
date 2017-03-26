@@ -105,7 +105,9 @@ wall_builder::wall_builder(
     price_a = price_double;
     price_b = price_simple;
     this->data = data;
+}
 
+const void wall_builder::process_field() {
     height = data.size();
     if (height == 0) {
         width = 0;
@@ -115,9 +117,7 @@ wall_builder::wall_builder(
 
     field = std::vector< std::vector<point> >(height,
         std::vector<point>(width));
-}
 
-const void wall_builder::process_field() {
     for (int heighti = 0; heighti < height; ++heighti) {
         for (int widthj = 0; widthj < width; ++widthj) {
             field[heighti][widthj].free = data[heighti][widthj] == '*';
