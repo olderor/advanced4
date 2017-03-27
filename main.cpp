@@ -52,7 +52,7 @@ private:
     // Parse the data (given state of field). Split field into two parts of the bigraph.
     const void process_field();
     // Kuhn algorithm to improve matching for the particular vertex.
-    const bool kuhn(const int vertex);
+    const bool find_maximum_matching_for_vertex(const int vertex);
     // Builds bigraph from the current field state.
     const void build_graph();
     // Set matching randomly.
@@ -152,7 +152,7 @@ const int wall_builder::get_min_price() {
     return connections * price_a + (free_count - connections * 2) * price_b;
 }
 
-const bool wall_builder::kuhn(const int vertex) {
+const bool wall_builder::find_maximum_matching_for_vertex(const int vertex) {
     if (used[vertex]) {
         return false;
     }
@@ -165,7 +165,7 @@ const bool wall_builder::kuhn(const int vertex) {
             independent_edge_set[to] = vertex;
             return true;
         }
-        if (kuhn(independent_edge_set[to])) {
+        if (find_maximum_matching_for_vertex(independent_edge_set[to])) {
             independent_edge_set[to] = vertex;
             return true;
         }
