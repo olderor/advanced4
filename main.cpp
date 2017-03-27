@@ -219,7 +219,7 @@ const void wall_builder::find_maximum_matching() {
             continue;
         }
         used = std::vector<bool>(first_size, false);
-        kuhn(i);
+        find_maximum_matching_for_vertex(i);
     }
 }
 
